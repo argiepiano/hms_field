@@ -101,6 +101,11 @@ function hms_field_field_formatter_info() {
       'field types' => array('hms_field'),
       'settings' => array('format' => 'h:mm', 'leading_zero' => TRUE),
     ),
+    'hms_natural_language_formatter' => array(
+      'label' => t('Natural language'),
+      'field types' => array('hms_field'),
+      'settings' => array(),
+    ),
   );
 }
 
@@ -157,12 +162,22 @@ function hms_field_field_formatter_settings_form($field, $instance, $view_mode, 
  */
 function hms_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
-  foreach ($items as $delta => $item) {
-    $element[$delta]['#theme'] = 'hms';
-    $element[$delta]['#value'] = $item['value'];
-    $element[$delta]['#format'] = $display['settings']['format'];
-    $element[$delta]['#leading_zero'] = $display['settings']['leading_zero'];
+
+  if ($display['type'] === 'hms_default_formatter') {
+    foreach ($items as $delta => $item) {
+      $element[$delta]['#theme'] = 'hms';
+      $element[$delta]['#value'] = $item['value'];
+      $element[$delta]['#format'] = $display['settings']['format'];
+      $element[$delta]['#leading_zero'] = $display['settings']['leading_zero'];
+    }
   }
+  else if ($display['type'] === 'hms_natural_language_formatter') {
+    foreach ($items as $delta => $item) {
+      $element[$delta]['#theme'] = 'hms_natural_language';
+      $element[$delta]['#value'] = $item['value'];
+    }
+  }
+
   return $element;
 }
 
@@ -173,6 +188,9 @@ function hms_field_theme($existing, $type, $theme, $path) {
   return array(
     'hms' => array(
       'variables' => array('value' => 0, 'format' => 'h:mm', 'leading_zero' => TRUE, 'running_since' => 0),
+    ),
+    'hms_natural_language' => array(
+      'variables' => array('value' => 0),
     ),
   );
 }
@@ -204,6 +222,35 @@ function theme_hms($variables) {
 }
 
 /**
+ * Theme hms_natural_language
+ *
+ * TODO: Make field formatter and theme configurable.
+ *   Give administrator options to exclude hours, minutes or seconds.
+ *   Give administrator options to set seperator(s)/template?
+ * TODO: Investigate running since options (see theme_hms)
+ *   Would be cool if we can also make this format a 'Forrest Gump' format.
+ */
+function theme_hms_natural_language($variables) {
+  $labels = _hms_label_map();
+  // TODO: investigate this more.
+  // Due to weird behavior of PHP:s explode or list we need
+  // to set values here, in the declaration, because the array is sorted backwards?
+  // Natural language means hours come first...
+  $values = array('h' => 0, 'm' => 0, 's' => 0);
+  list ($values['h'], $values['m'], $values['s']) = explode(':', _hms_seconds_to_formatted($variables['value'], 'h:m:s', TRUE));
+  $html = array();
+  foreach ($values as $key => $val) {
+    if ($val > 0) {
+      $html[] = '<span class="' . drupal_clean_css_identifier($labels[$key]['multiple']) . '">' . format_plural($val, '@count ' . $labels[$key]['single'], '@count ' . $labels[$key]['multiple']) . '</span>';
+    }
+  }
+  // TODO: make output nicer.
+  // 10 hours and 2 minutes and 1 second is UGLY!
+  // Nicer format: 10 hours, 2 minutes and 1 second.
+  return implode(' ' . t('and') . ' ', $html);
+}
+
+/**
  * Helpers.
  */
 
@@ -223,6 +270,19 @@ function _hms_factor_map() {
   $factor = array('h' => 3600, 'm' => 60, 's' => 1);
   drupal_alter('hms_factor', $factor);
   return $factor;
+}
+
+/**
+ * Returns the label map of the format options.
+ */
+function _hms_label_map() {
+  $labels = array(
+    'h' => array('single' => 'hour', 'multiple' => 'hours'),
+    'm' => array('single' => 'minute', 'multiple' => 'minutes'),
+    's' => array('single' => 'second', 'multiple' => 'seconds'),
+  );
+  drupal_alter('hms_label', $labels);
+  return $labels;
 }
 
 /**
