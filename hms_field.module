@@ -240,7 +240,7 @@ function theme_hms_natural_language($variables) {
   list ($values['h'], $values['m'], $values['s']) = explode(':', _hms_seconds_to_formatted($variables['value'], 'h:m:s', TRUE));
   $html = array();
   foreach ($values as $key => $val) {
-    if ($val > 0) {
+    if ($val != 0) {
       $html[] = '<span class="' . drupal_clean_css_identifier($labels[$key]['multiple']) . '">' . format_plural($val, '@count ' . $labels[$key]['single'], '@count ' . $labels[$key]['multiple']) . '</span>';
     }
   }
