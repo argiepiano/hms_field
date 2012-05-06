@@ -317,6 +317,12 @@ function _hms_formatted_to_seconds($str, $format='h:m:s') {
  * Returns a formatted string form the number of seconds.
  */
 function _hms_seconds_to_formatted($seconds, $format='h:mm', $leading_zero = TRUE) {
+
+  // Return NULL on empty string.
+  if ($seconds === '') {
+    return NULL;
+  }
+
   $factor = _hms_factor_map();
   $values = array();
   $left_over = $seconds;
