@@ -36,7 +36,7 @@ function hms_field_field_info() {
       'description' => t('Store Hours minutes or Seconds'),
       'translatable' => 0,
       'settings' => array(),
-      'instance_settings' => array('format' => 'h:mm'),
+      'instance_settings' => array('format' => 'h:mm', 'default_description' => 1),
       'default_widget' => 'hms_default_widget',
       'default_formatter' => 'hms_default_formatter',
     ),
@@ -53,7 +53,13 @@ function hms_field_field_instance_settings_form($field, $instance) {
       '#title' => t('Input format'),
       '#default_value' => $instance['settings']['format'],
       '#options' => _hms_format_options(),
-      '#description' => t('The input format used for this field'),
+      '#description' => t('The input format used for this field.'),
+    ),
+    'default_description' => array(
+      '#type' => 'checkbox',
+      '#title' => t('Default help text'),
+      '#default_value' => $instance['settings']['default_description'],
+      '#description' => t('Provide a default help text about the format. (Only when you leave the help text empty.)'),
     )
   );
 }
@@ -86,6 +92,7 @@ function hms_field_field_is_empty($item, $field) {
 function hms_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $value = isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL;
   $format = $instance['settings']['format'];
+  $default_description = $instance['settings']['default_description'];
   $widget = $element;
   $widget['#delta'] = $delta;
 
@@ -95,8 +102,8 @@ function hms_field_field_widget_form(&$form, &$form_state, $field, $instance, $l
     '#format' => $format,
   );
 
-  if (!isset($widget['description']) || !strlen($widget['description'])) {
-    $widget['#description'] = t('Input format: @format', array('@format' => $format));
+  if ($default_description && (!isset($widget['#description']) || !strlen($widget['#description']))) {
+    $widget['#description'] = t('Input format: @format.', array('@format' => $format));
   }
 
   $element['value'] = $widget;
