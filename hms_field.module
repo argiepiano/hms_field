@@ -267,7 +267,7 @@ function hms_field_field_formatter_view($entity_type, $entity, $field, $instance
 function hms_field_theme($existing, $type, $theme, $path) {
   return array(
     'hms' => array(
-      'variables' => array('value' => 0, 'format' => 'h:mm', 'leading_zero' => TRUE, 'running_since' => 0),
+      'variables' => array('value' => 0, 'format' => 'h:mm', 'leading_zero' => TRUE, 'running_since' => 0, 'offset' => 0, 'default_value' => 0),
     ),
     'hms_natural_language' => array(
       'variables' => array('value' => 0, 'format' => 'w:d:h:m:s', 'separator' => ', ', 'last_separator' => ' and '),
@@ -280,7 +280,18 @@ function hms_field_theme($existing, $type, $theme, $path) {
  */
 function theme_hms($variables) {
   $classes = array('hms', str_replace(':', '-', 'hms-format-' . $variables['format']));
+
+  $value = $variables['value'];
+  $offset = $variables['offset'];
+  $default_value = $variables['default_value'];
   if ($variables['running_since'] !== 0) {
+    if (!$offset && !$default_value && $value) {
+      // Backwards compatible.
+      $offset = $value;
+      $default_value = $value;
+      $value = 0;
+    }
+    $value = $default_value;
     // It is not possible to run longer then from 1970-01-01 00:00:01
     $classes[] = 'hms-running';
     // We also need to pass the running since value to JS.
@@ -291,12 +302,15 @@ function theme_hms($variables) {
       $variables['running_since'] = REQUEST_TIME;
     }
     $classes[] = 'hms-since-' . $variables['running_since'];
-    $classes[] = 'hms-offset-' . $variables['value'];
+    $classes[] = 'hms-offset-' . $offset;
     $classes[] = 'hms-leading_zero-' . $variables['leading_zero'];
+    if ($offset) {
+      $value = (REQUEST_TIME - $variables['running_since']) + $offset;
+    }
     _hms_add_running_js();
   }
   $html = '<span class="' . implode(' ' , $classes) . '">';
-  $html .= _hms_seconds_to_formatted($variables['value'], $variables['format'], $variables['leading_zero']);
+  $html .= _hms_seconds_to_formatted($value, $variables['format'], $variables['leading_zero']);
   $html .= '</span>';
   return $html;
 }
