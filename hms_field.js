@@ -113,6 +113,7 @@ Drupal.behaviors.hmsfield = {
       }, 1000);
     } else if (!$('.hms-running').length && hms_timer) {
       window.clearInterval(hms_timer);
+      hms_timer = null;
     }
 
   },
@@ -120,6 +121,7 @@ Drupal.behaviors.hmsfield = {
   detach: function (context, settings) {
     if (hms_timer) {
       window.clearInterval(hms_timer);
+      hms_timer = null;
     }
   }
 };
