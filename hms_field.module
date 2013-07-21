@@ -39,6 +39,7 @@ function hms_field_field_info() {
       'instance_settings' => array('format' => 'h:mm', 'default_description' => 1),
       'default_widget' => 'hms_default_widget',
       'default_formatter' => 'hms_default_formatter',
+      'property_type' => 'integer',
     ),
   );
 }
