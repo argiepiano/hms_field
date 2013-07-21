@@ -4,4 +4,6 @@ package = Fields
 core = 7.x
 
 dependencies[] = field
+
 files[] = hms_field.migrate.inc
+files[] = views/hms_field_views_handler_filter_hms.inc

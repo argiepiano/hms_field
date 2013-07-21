@@ -27,6 +27,16 @@ function hms_field_element_info() {
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function hms_field_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'hms_field') . '/views',
+  );
+}
+
+/**
  * Implements hook_field_info().
  */
 function hms_field_field_info() {
@@ -589,3 +599,4 @@ function _hms_add_running_js() {
   drupal_add_js(drupal_get_path('module', 'hms_field') . '/hms_field.js');
   drupal_add_js(array('hms_field' => array('servertime' => REQUEST_TIME, 'factor_map' => _hms_factor_map())), 'setting');
 }
+
