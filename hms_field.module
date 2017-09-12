@@ -570,7 +570,13 @@ function _add_multi_search_tokens($item) {
  */
 function _hms_value_callback($element, $input = NULL, $form_state) {
   if ($form_state['process_input'] && (!empty($input) || $input === 0)) {
-    return _hms_formatted_to_seconds($input, $element['#format']);
+    $seconds = _hms_formatted_to_seconds($input, $element['#format']);
+    // If seconds are 0 return string instead of integer.
+    if ($seconds == 0) {
+      return '0';
+    }
+
+    return $seconds;
   }
   return $input;
 }
