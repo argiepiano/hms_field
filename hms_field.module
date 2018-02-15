@@ -253,9 +253,9 @@ function hms_field_field_formatter_view($entity_type, $entity, $field, $instance
       $element[$delta]['#theme'] = 'hms_natural_language';
       $element[$delta]['#value'] = $item['value'];
       $element[$delta]['#format'] = '';
-      foreach ($display['settings']['display_formats'] as $type =>$fragment) {
+      foreach ($display['settings']['display_formats'] as $type => $fragment) {
         if ($fragment) {
-          $element[$delta]['#format'] .= ':' . $type;
+          $element[$delta]['#format'] .= ':' . $fragment;
         }
       }
       if (!strlen($element[$delta]['#format'])) {
