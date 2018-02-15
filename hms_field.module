@@ -71,6 +71,14 @@ function hms_field_field_instance_settings_form($field, $instance) {
       '#title' => t('Default help text'),
       '#default_value' => $instance['settings']['default_description'],
       '#description' => t('Provide a default help text about the format. (Only when you leave the help text empty.)'),
+    ),
+    'max' => array(
+      '#type' => 'textfield',
+      '#title' => t('Max unixtime value'),
+      '#description' => t('Default empty no limit (integer)'),
+      '#default_value' => $instance['settings']['max'],
+      '#size' => 15,
+      '#required' => FALSE,
     )
   );
 }
@@ -103,6 +111,7 @@ function hms_field_field_is_empty($item, $field) {
 function hms_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $value = isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL;
   $format = $instance['settings']['format'];
+  $max = $instance['settings']['max'];
   $default_description = $instance['settings']['default_description'];
   $widget = $element;
   $widget['#delta'] = $delta;
@@ -111,6 +120,10 @@ function hms_field_field_widget_form(&$form, &$form_state, $field, $instance, $l
     '#type' => 'hms',
     '#default_value' => $value,
     '#format' => $format,
+    '#max' => $max,
+    '#element_validate' => array(
+      'hms_field_widget_validator'
+    )
   );
 
   if ($default_description && (!isset($widget['#description']) || !strlen($widget['#description']))) {
@@ -119,6 +132,16 @@ function hms_field_field_widget_form(&$form, &$form_state, $field, $instance, $l
 
   $element['value'] = $widget;
   return $element;
+}
+
+/**
+ * HMS widget element validator.
+ */
+function hms_field_widget_validator($element, &$form_state) {
+  $get = $form_state['field']['field_hms']['und']['instance'];
+  if(!empty($get['settings']['max']) && ($element['#value'] > $get['settings']['max'] || $element['#value'] < 0)) {
+    form_error($element, t('The "!name" value is out the limit, check in field settings.', array('!name' => t($element['#title']))));
+  }
 }
 
 /**
