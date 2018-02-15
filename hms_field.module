@@ -407,11 +407,11 @@ function _hms_factor_map($return_full = FALSE) {
   $factor = drupal_static(__FUNCTION__);
   if (empty($factor)) {
     $factor = array(
-      'w' => array('factor value' => 604800, 'label single' => 'week', 'label multiple' => 'weeks'),
-      'd' => array('factor value' => 86400, 'label single' => 'day', 'label multiple' => 'days'),
-      'h' => array('factor value' => 3600, 'label single' => 'hour', 'label multiple' => 'hours'),
-      'm' => array('factor value' => 60, 'label single' => 'minute', 'label multiple' => 'minutes'),
-      's' => array('factor value' => 1, 'label single' => 'second', 'label multiple' => 'seconds'),
+      'w' => array('factor value' => 604800, 'label single' => t('week'), 'label multiple' => t('weeks')),
+      'd' => array('factor value' => 86400, 'label single' => t('day'), 'label multiple' => t('days')),
+      'h' => array('factor value' => 3600, 'label single' => t('hour'), 'label multiple' => t('hours')),
+      'm' => array('factor value' => 60, 'label single' => t('minute'), 'label multiple' => t('minutes')),
+      's' => array('factor value' => 1, 'label single' => t('second'), 'label multiple' => t('seconds')),
     );
     drupal_alter('hms_factor', $factor);
   }
