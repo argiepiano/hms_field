@@ -27,12 +27,22 @@ function hms_field_element_info() {
 }
 
 /**
+ * Implements hook.autoload_info().
+ */
+function hms_field_autoload_info() {
+  return array(
+    'MigrateHmsFieldHandler' => 'hms_field.migrate.inc',
+    'hms_field_views_handler_filter_hms' => 'views/hms_field_views_handler_filter_hms.inc',
+  );
+}
+
+/**
  * Implements hook_views_api().
  */
 function hms_field_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'hms_field') . '/views',
+    'path' => backdrop_get_path('module', 'hms_field') . '/views',
   );
 }
 
@@ -345,7 +355,7 @@ function theme_hms_natural_language($variables) {
   $html = array();
   foreach ($values as $key => $val) {
     if ($val != 0) {
-      $html[] = '<span class="' . drupal_clean_css_identifier($labels[$key]['label multiple']) . '">' . format_plural($val, '@count ' . $labels[$key]['label single'], '@count ' . $labels[$key]['label multiple']) . '</span>';
+      $html[] = '<span class="' . backdrop_clean_css_identifier($labels[$key]['label multiple']) . '">' . format_plural($val, '@count ' . $labels[$key]['label single'], '@count ' . $labels[$key]['label multiple']) . '</span>';
     }
   }
 
@@ -373,7 +383,7 @@ function theme_hms_natural_language($variables) {
  * HMS form element validator.
  */
 function _hms_validate_form_element($element, &$form_state, $form) {
-  $form_input = drupal_array_get_nested_value($form_state['input'], $element['#array_parents']);
+  $form_input = backdrop_array_get_nested_value($form_state['input'], $element['#array_parents']);
   if (_hms_formatted_to_seconds($form_input, $element['#format']) === FALSE) {
     form_error($element, t('@title field cannot be parsed. Please use format \'%format\'.', array('@title' => $element['#title'], '%format' => $element['#format'])));
   }
@@ -384,10 +394,10 @@ function _hms_validate_form_element($element, &$form_state, $form) {
 * Returns possible format options.
 */
 function _hms_format_options() {
-  $format = drupal_static(__FUNCTION__);
+  $format = backdrop_static(__FUNCTION__);
   if (empty($format)) {
     $format = array('ISO 8601 based' => array('h:mm' => 'h:mm', 'h:mm:ss' => 'h:mm:ss', 'm:ss' => 'm:ss', 'h' => 'h', 'm' => 'm', 's' => 's'), 'Space separated' => array('hms' => 'e.q. 3h 15m 30s'));
-    drupal_alter('hms_format', $format);
+    backdrop_alter('hms_format', $format);
   }
   return $format;
 }
@@ -404,7 +414,7 @@ function _hms_format_options() {
  *  Use HOOK_hms_factor_alter($factors) to do your own magic.
  */
 function _hms_factor_map($return_full = FALSE) {
-  $factor = drupal_static(__FUNCTION__);
+  $factor = backdrop_static(__FUNCTION__);
   if (empty($factor)) {
     $factor = array(
       'w' => array('factor value' => 604800, 'label single' => t('week'), 'label multiple' => t('weeks')),
@@ -413,7 +423,7 @@ function _hms_factor_map($return_full = FALSE) {
       'm' => array('factor value' => 60, 'label single' => t('minute'), 'label multiple' => t('minutes')),
       's' => array('factor value' => 1, 'label single' => t('second'), 'label multiple' => t('seconds')),
     );
-    drupal_alter('hms_factor', $factor);
+    backdrop_alter('hms_factor', $factor);
   }
   if ($return_full) {
     return $factor;
@@ -679,12 +689,12 @@ function _hms_pre_render_form_element($element) {
  * Add js for running HMS fields.
  */
 function _hms_add_running_js() {
-  $hms_running_js_added = &drupal_static(__FUNCTION__);
+  $hms_running_js_added = &backdrop_static(__FUNCTION__);
   if (!empty($hms_running_js_added)) {
     return;
   }
   $hms_running_js_added = TRUE;
-  drupal_add_js(drupal_get_path('module', 'hms_field') . '/hms_field.js');
-  drupal_add_js(array('hms_field' => array('servertime' => REQUEST_TIME, 'factor_map' => _hms_factor_map())), 'setting');
+  backdrop_add_js(backdrop_get_path('module', 'hms_field') . '/hms_field.js');
+  backdrop_add_js(array('hms_field' => array('servertime' => REQUEST_TIME, 'factor_map' => _hms_factor_map())), 'setting');
 }
 

@@ -1,9 +1,7 @@
+type = module
 name = HMS Field
 description = "Provides a field for Hours Minutes and Seconds stored as seconds."
 package = Fields
-core = 7.x
+backdrop = 1.x
 
 dependencies[] = field
-
-files[] = hms_field.migrate.inc
-files[] = views/hms_field_views_handler_filter_hms.inc
