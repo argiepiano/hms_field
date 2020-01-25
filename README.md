@@ -45,8 +45,6 @@ Credits
 
 - Ported to Backdrop CMS by [argiepiano](https://github.com/argiepiano).
 - Originally written for Drupal by [Drupal internetbureau .VDMi/ in Rotterdam, The Netherlands.](https://vdmi.nl/).
-- Based on the [MagicalCode project](https://github.com/example).
-- Sponsored by [TechNoCorp](https://example.com)
 
 License
 -------
