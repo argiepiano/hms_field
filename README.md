@@ -17,10 +17,6 @@ Pick one of these formats for input or output:
 
 Or alternatively, use hook_hms_format_alter() to add/edit your own format.
 
-Detail in READMEs should be limited to the minimum required for installation and
-getting started. More detailed documentation should be moved to a GitHub wiki
-page: https://github.com/backdrop-contrib/setup/wiki/Documentation.
-
 Installation
 ------------
 
