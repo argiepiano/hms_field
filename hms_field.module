@@ -660,7 +660,7 @@ function _add_multi_search_tokens($item) {
 /**
  * Helper function to convert input values to seconds (FORM API).
  */
-function _hms_value_callback($element, $input = NULL, $form_state) {
+function _hms_value_callback($element, $input, $form_state) {
   if ($form_state['process_input'] && (!empty($input) || $input === 0)) {
     $seconds = _hms_formatted_to_seconds($input, $element['#format']);
     // If seconds are 0 return string instead of integer.
