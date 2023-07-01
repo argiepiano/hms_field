@@ -447,7 +447,7 @@ function _hms_factor_map($return_full = FALSE) {
  * FALSE is error.
  */
 function _hms_formatted_to_seconds($str, $format='h:m:s', $element = NULL) {
-  if (!strlen($str)) {
+  if (is_null($str) || !strlen($str)) {
     return NULL;
   }
   if ($str == '0') {
