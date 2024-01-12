@@ -139,7 +139,11 @@ function hms_field_field_formatter_info() {
     'hms_default_formatter' => array(
       'label' => t('Hours Minutes and Seconds'),
       'field types' => array('hms_field'),
-      'settings' => array('format' => 'h:mm', 'leading_zero' => TRUE),
+      'settings' => array(
+        'format' => 'h:mm',
+        'leading_zero' => TRUE,
+        'add_span' => TRUE,
+      ),
     ),
     'hms_natural_language_formatter' => array(
       'label' => t('Natural language'),
@@ -162,6 +166,8 @@ function hms_field_field_formatter_settings_summary($field, $instance, $view_mod
     $summary .= t('Format: @format', array('@format' => $settings['format']));
     $summary .= '<br>';
     $summary .= t('Leading zero: @zero', array('@zero' => ($settings['leading_zero']?t('On'):t('Off'))));
+    $summary .= '<br>';
+    $summary .= t('Wrap in span: @wrap', array('@wrap' => ($settings['add_span']?t('Yes'):t('No'))));
   }
   elseif ($display['type'] == 'hms_natural_language_formatter') {
     $factors = _hms_factor_map(TRUE);
@@ -207,6 +213,12 @@ function hms_field_field_formatter_settings_form($field, $instance, $view_mode, 
       '#title' => t('Leading zero'),
       '#description' => t('Leading zero values will be displayed when this option is checked'),
       '#default_value' => $settings['leading_zero'],
+    );
+    $element['add_span'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Wrap in span'),
+      '#description' => t('The field value will be wrapped in with a span HTML tag, and themed with specific css classes reflecting the format.'),
+      '#default_value' => $settings['add_span'],
     );
   }
   elseif ($display['type'] == 'hms_natural_language_formatter') {
@@ -256,6 +268,7 @@ function hms_field_field_formatter_view($entity_type, $entity, $field, $instance
       $element[$delta]['#value'] = $item['value'];
       $element[$delta]['#format'] = $display['settings']['format'];
       $element[$delta]['#leading_zero'] = $display['settings']['leading_zero'];
+      $element[$delta]['#add_span'] = isset($display['settings']['add_span']) ? $display['settings']['add_span'] : TRUE;
     }
   }
   else if ($display['type'] === 'hms_natural_language_formatter') {
@@ -288,7 +301,7 @@ function hms_field_field_formatter_view($entity_type, $entity, $field, $instance
 function hms_field_theme($existing, $type, $theme, $path) {
   return array(
     'hms' => array(
-      'variables' => array('value' => 0, 'format' => 'h:mm', 'leading_zero' => TRUE, 'running_since' => 0, 'offset' => 0, 'default_value' => 0),
+      'variables' => array('value' => 0, 'format' => 'h:mm', 'leading_zero' => TRUE, 'add_span' => TRUE, 'running_since' => 0, 'offset' => 0, 'default_value' => 0),
     ),
     'hms_natural_language' => array(
       'variables' => array('value' => 0, 'format' => 'w:d:h:m:s', 'separator' => ', ', 'last_separator' => ' and '),
@@ -330,9 +343,10 @@ function theme_hms($variables) {
     }
     _hms_add_running_js();
   }
-  $html = '<span class="' . implode(' ' , $classes) . '">';
-  $html .= _hms_seconds_to_formatted($value, $variables['format'], $variables['leading_zero']);
-  $html .= '</span>';
+  $html = _hms_seconds_to_formatted($value, $variables['format'], $variables['leading_zero']);
+  if ($variables['add_span']) {
+    $html = '<span class="' . implode(' ' , $classes) . '">' . $html . '</span>';
+  }
   return $html;
 }
 
