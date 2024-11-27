@@ -101,7 +101,7 @@ function hms_field_field_widget_info() {
  * Implements hook_field_is_empty().
  */
 function hms_field_field_is_empty($item, $field) {
-  if ($item['value'] === '') {
+  if ($item['value'] === '' || $item['value'] === FALSE) {
       return TRUE;
   }
   return FALSE;
